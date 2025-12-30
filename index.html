@@ -3,85 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAMA TEAM</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>YAMA TEAM | Ultimate Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* --- Fonts & Variables --- */
         @font-face {
             font-family: 'Burbank Big Condensed Black';
-            src: url('path/to/burbank-big-condensed-black.woff2') format('woff2'),
-                 url('path/to/burbank-big-condensed-black.woff') format('woff'),
-                 url('path/to/burbank-big-condensed-black.ttf') format('truetype');
+            src: url('https://db.onlinewebfonts.com/t/2c2cc71d6006c9a30a10404e38953181.woff2') format('woff2'); /* Fallback URL if local fails */
             font-weight: 900;
             font-style: normal;
             font-display: swap;
         }
 
         :root {
-            --background-color: #0a0a0a;
-            --container-background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
-            --highlight-color: #00aaff;
-            --secondary-highlight-color: #ff00ff;
-            --text-color: #e0e0e0;
-            --input-background: #333;
-            --input-border-color: #555;
-            --button-background: linear-gradient(90deg, var(--highlight-color), var(--secondary-highlight-color));
-            --button-hover-background: linear-gradient(90deg, var(--secondary-highlight-color), var(--highlight-color));
-            --button-text-color: white;
-            --button-disabled-background: #555;
-            --button-disabled-text-color: #ccc;
-
-            --progress-background: #1a1a1a;
-            --progress-fill-start-color: #0077cc;
-            --progress-fill-end-color: #00ccff;
-            --progress-water-reflection: rgba(255, 255, 255, 0.3);
-            --progress-water-wave-size: 10px;
-            --progress-water-flow-speed: 5s;
-
-            --footer-text-color: #777;
-
-            --tilt-limit: 10deg;
-            --glint-speed: 2s;
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 25, 0.85);
+            --primary: #00f2ea;
+            --secondary: #ff0050;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --accent-gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --shadow-glow: 0 0 20px rgba(0, 242, 234, 0.3);
+            --font-stack: 'Burbank Big Condensed Black', 'Impact', sans-serif;
         }
 
+        /* --- Global Reset & Body --- */
+        * { box-sizing: border-box; }
+        
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            font-family: 'Burbank Big Condensed Black', Impact, sans-serif;
-            text-align: center;
-            padding: 40px 20px 80px 20px; /* Increased bottom padding to move footer up */
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 242, 234, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 80, 0.1) 0%, transparent 20%);
+            color: var(--text-main);
+            font-family: var(--font-stack);
             margin: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
         }
 
-        h1,
-        input[type="text"],
-        .downloadFiveM,
-        #status,
-        footer p {
-            font-family: 'Burbank Big Condensed Black', Impact, sans-serif;
-        }
-
-        h1 {
-            color: var(--highlight-color);
-            margin-bottom: 30px;
-            font-size: 3em;
-            text-shadow: 0 0 5px rgba(0, 170, 255, 0.5);
-            animation: bounceAndScale 2s infinite ease-in-out;
-        }
-
-         @keyframes bounceAndScale {
-             0% { transform: translateY(0) scale(1); }
-             50% { transform: translateY(-10px) scale(1.05); }
-             100% { transform: translateY(0) scale(1); }
-         }
-
+        /* --- Main Container with 3D Tilt Effect --- */
         .scene {
-            width: 100%;
             perspective: 1000px;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -89,237 +60,321 @@
         }
 
         .container {
-            max-width: 500px;
             width: 100%;
-            background: var(--container-background);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.6);
+            max-width: 550px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), var(--shadow-glow);
             transform-style: preserve-3d;
-            transform: rotateX(0) rotateY(0);
             transition: transform 0.1s ease-out;
             position: relative;
-            overflow: hidden;
+            z-index: 10;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%);
-            transform: rotate(45deg);
-            transition: opacity 0.3s ease-in-out;
-            opacity: 0;
-            pointer-events: none;
+        /* --- Typography --- */
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            animation: floatText 3s ease-in-out infinite;
         }
 
-         .container.glint::before {
-             animation: glint var(--glint-speed) linear infinite;
-             opacity: 1;
-         }
+        @keyframes floatText {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
 
-         @keyframes glint {
-             0% { transform: rotate(45deg) translate(-50%, -50%); }
-             100% { transform: rotate(45deg) translate(50%, 50%); }
-         }
+        h2 {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 25px;
+            transform: translateZ(20px);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 12px;
+            font-family: var(--font-stack);
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Inputs --- */
+        .input-group {
+            position: relative;
+            transform: translateZ(30px);
+            margin-bottom: 20px;
+        }
 
         input[type="text"] {
-            width: calc(100% - 30px);
-            padding: 15px;
-            margin: 15px 0;
-            border: 2px solid var(--input-border-color);
-            background: var(--input-background);
-            color: var(--text-color);
-            border-radius: 10px;
-            font-size: 1.2em;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            transform: translateZ(20px);
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif; /* Readable font for URL */
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: var(--highlight-color);
-            box-shadow: 0 0 10px rgba(0, 170, 255, 0.7);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 234, 0.2);
+            background: rgba(0,0,0,0.6);
         }
 
-        .downloadFiveM {
-            width: 100%;
-            padding: 15px;
-            background: var(--button-background);
-            color: var(--button-text-color);
-            border: none;
-            cursor: pointer;
-            font-size: 1.5em;
-            font-weight: normal;
-            border-radius: 10px;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background 0.3s ease-in-out;
-            margin-top: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-            transform: translateZ(30px);
-            position: relative;
-            overflow: hidden;
-            text-shadow: none;
-        }
-
-         .downloadFiveM::before {
-             content: '';
-             position: absolute;
-             top: 0;
-             left: -100%;
-             width: 50%;
-             height: 100%;
-             background: rgba(255, 255, 255, 0.3);
-             transform: skewX(-25deg);
-             transition: transform 0.3s ease-in-out;
-         }
-
-        .downloadFiveM:hover:not(:disabled) {
-            background: var(--button-hover-background);
-            transform: translateZ(35px) scale(1.02);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
-        }
-
-         .downloadFiveM:hover:not(:disabled)::before {
-             transform: skewX(-25deg) translateX(200%);
-         }
-
-        .downloadFiveM:active:not(:disabled) {
-            transform: translateZ(25px) scale(0.98);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .downloadFiveM:disabled {
-             background: var(--button-disabled-background);
-             color: var(--button-disabled-text-color);
-             cursor: not-allowed;
-             transform: translateZ(30px);
-             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-         }
-
-        #status {
-            margin-top: 20px;
-            min-height: 1.5em;
-            font-size: 1.1em;
-            color: var(--text-color);
-            transform: translateZ(10px);
-            opacity: 0;
-            animation: fadeInStatus 0.5s ease-out forwards;
-        }
-
-         @keyframes fadeInStatus {
-             to { opacity: 1; }
-         }
-
-         #status i {
-             margin-right: 5px;
-         }
-
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: var(--progress-background);
-            border-radius: 15px;
-            margin-top: 20px;
-            overflow: hidden;
-            box-shadow: inset 0 8px 15px rgba(0, 0, 0, 0.6),
-                        inset 0 0 8px rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transform: translateZ(10px);
-            position: relative;
-        }
-
-        .progress {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(to bottom, var(--progress-fill-start-color), var(--progress-fill-end-color));
-            background: linear-gradient(to bottom, var(--progress-fill-start-color), var(--progress-fill-end-color)),
-                        repeating-linear-gradient(-45deg, var(--progress-water-reflection), var(--progress-water-reflection) 2px, transparent 2px, transparent 4px);
-             background-size: 100% 100%, var(--progress-water-wave-size) var(--progress-water-wave-size);
-             animation: fillWater 0.5s ease-in-out forwards,
-                        flowWater var(--progress-water-flow-speed) linear infinite;
-
-            border-radius: 0;
-             position: relative;
-        }
-
-         @keyframes fillWater {
-             to { width: var(--fill-percentage, 0%); }
-         }
-
-         @keyframes flowWater {
-             0% { background-position: 0 0, 0 0; }
-             100% { background-position: 100% 0, var(--progress-water-wave-size) 0; }
-         }
-
-         .progress::after {
-             content: '';
-             position: absolute;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
-             pointer-events: none;
-         }
-
-        footer {
-            margin-top: auto;
-            padding: 20px 0; /* Adjusted padding for footer */
-        }
-
-        footer p {
-            color: var(--footer-text-color);
-            font-weight: normal;
-            font-size: 1em;
+        /* --- File Upload Area --- */
+        .file-drop-area {
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 30px 20px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
         }
 
+        .file-drop-area:hover, .file-drop-area.dragover {
+            border-color: var(--secondary);
+            background: rgba(255, 0, 80, 0.05);
+        }
+
+        .fake-btn {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .file-msg {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+            transition: color 0.3s;
+        }
+        
+        .file-drop-area:hover .file-icon {
+            color: var(--secondary);
+        }
+
+        /* --- Action Button --- */
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent-gradient);
+            background-size: 200% auto;
+            color: white;
+            font-family: var(--font-stack);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 242, 234, 0.3);
+            transform: translateZ(40px);
+            margin-top: 10px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background-position: right center;
+            transform: translateZ(45px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(255, 0, 80, 0.4);
+        }
+
+        .action-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- Status & Progress --- */
+        #status-container {
+            margin-top: 25px;
+            transform: translateZ(20px);
+        }
+
+        #status-text {
+            text-align: left;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 24px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 24px; /* Thinner, sleeker */
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            position: relative;
+            transition: width 0.3s ease-out;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* Animated stripes on progress */
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: moveStripes 1s linear infinite;
+            border-radius: 12px;
+        }
+
+        @keyframes moveStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 20px; }
+        }
+
+        /* --- Footer --- */
+        footer {
+            margin-top: 40px;
+            color: #555;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        /* --- Responsiveness --- */
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 2.5em;
-            }
-
-            input[type="text"], .downloadFiveM, #status, footer p {
-                font-size: 1em;
-            }
+            .container { padding: 25px; }
+            h1 { font-size: 2.5rem; }
+            .tabs { flex-direction: row; }
+            .tab-btn { font-size: 1rem; padding: 10px; }
         }
     </style>
-    <script>
-        document.addEventListener("contextmenu", function(e) {
-            e.preventDefault();
-        });
-        document.addEventListener("keydown", function(e) {
-            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85) || (e.ctrlKey && e.keyCode == 83)) {
-                e.preventDefault();
-            }
-        });
-
-        (function() {
-             if(window.console){
-                const methods = ['log', 'warn', 'error', 'info', 'debug', 'assert', 'clear', 'dir', 'dirxml', 'exception', 'group', 'groupCollapsed', 'groupEnd', 'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd', 'timeStamp', 'timeline', 'timelineEnd', 'count', 'trace'];
-                methods.forEach(method => {
-                    console[method] = function() {};
-                });
-            }
-        })();
-    </script>
 </head>
 <body>
+
     <div class="scene">
-        <div class="container">
+        <div class="container" id="tilt-card">
             <h1>YAMA TEAM</h1>
-            <input type="text" id="modUrl" placeholder="Enter mod URL from gta5-mods.com">
-            <button class="downloadFiveM"><i class='fas fa-download'></i>&nbsp;&nbsp;Convert and Download</button>
-            <p id="status"></p>
-            <div class="progress-bar">
-                <div class="progress"></div>
+            <h2>Ultimate FiveM Converter</h2>
+
+            <!-- Navigation Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('url')"><i class="fas fa-link"></i> Link</button>
+                <button class="tab-btn" onclick="switchTab('file')"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+            </div>
+
+            <!-- URL Mode -->
+            <div id="tab-url" class="tab-content active">
+                <div class="input-group">
+                    <input type="text" id="modUrl" placeholder="Paste gta5-mods.com URL here...">
+                </div>
+            </div>
+
+            <!-- File Upload Mode -->
+            <div id="tab-file" class="tab-content">
+                <div class="input-group">
+                    <input type="file" id="fileInput" hidden accept=".zip,.rar,.7z">
+                    <div class="file-drop-area" id="dropZone">
+                        <i class="fas fa-file-archive file-icon"></i>
+                        <span class="file-msg">Drag & Drop file here or click to browse</span>
+                        <div class="fake-btn">Choose File</div>
+                        <p id="fileNameDisplay" style="margin-top: 10px; color: var(--primary); font-size: 0.9em;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button class="action-btn" id="startBtn">
+                <i class="fas fa-bolt"></i> Start Conversion
+            </button>
+
+            <!-- Status Area -->
+            <div id="status-container">
+                <div id="status-text"></div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -329,251 +384,298 @@
     </footer>
 
     <script>
-        $(document).ready(function() {
-            'use strict';
-            // NEW API ENDPOINTS
-            var apiConvert = "https://convert.cfx.rs/api/convert";
-            var apiQuery = "https://convert.cfx.rs/api/query";
-            var apiBase = "https://convert.cfx.rs/";
+        // --- Configuration ---
+        const API = {
+            UPLOAD: "https://files.a31.ink/",
+            CONVERT: "https://convert.cfx.rs/api/convert",
+            QUERY: "https://convert.cfx.rs/api/query",
+            BASE_DL: "https://convert.cfx.rs/"
+        };
 
-            var downloadTriggered = false;
-            var statusInterval;
-            const container = $('.container');
-            const downloadButton = $('.downloadFiveM');
-            const statusElement = $("#status");
-            const progressBar = $('.progress');
-            const rootStyle = document.documentElement ? getComputedStyle(document.documentElement) : null;
-            const tiltLimit = rootStyle ? parseFloat(rootStyle.getPropertyValue('--tilt-limit')) : 10;
+        // --- State ---
+        let currentMode = 'url'; // 'url' or 'file'
+        let statusInterval = null;
+        let isProcessing = false;
 
-            let latestMousePos = { x: 0, y: 0 };
-            let pendingFrame = false;
+        // --- UI Interactions ---
+        function switchTab(mode) {
+            if (isProcessing) return; // Lock tabs during process
+            currentMode = mode;
+            
+            // Toggle Buttons
+            $('.tab-btn').removeClass('active');
+            $(`.tab-btn[onclick="switchTab('${mode}')"]`).addClass('active');
+            
+            // Toggle Content
+            $('.tab-content').removeClass('active');
+            $(`#tab-${mode}`).addClass('active');
+            
+            // Reset UI
+            resetUI();
+        }
 
-            function updateTilt() {
-                if (!container || container.length === 0) {
-                     pendingFrame = false;
-                     return;
-                 }
+        // --- File Input Logic ---
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
 
-                const containerRect = container[0].getBoundingClientRect();
-                 if (containerRect.width === 0 || containerRect.height === 0) {
-                      pendingFrame = false;
-                      return;
-                  }
+        dropZone.addEventListener('click', () => fileInput.click());
 
-                const mouseX = latestMousePos.x;
-                const mouseY = latestMousePos.y;
-
-                const relativeMouseX = (mouseX - containerRect.left) / containerRect.width * 2 - 1;
-                const relativeMouseY = (mouseY - containerRect.top) / containerRect.height * 2 - 1;
-
-                let rotateY = relativeMouseX * tiltLimit;
-                let rotateX = -(relativeMouseY * tiltLimit);
-
-                const clampedRotateX = Math.max(-tiltLimit, Math.min(tiltLimit, rotateX));
-                const clampedRotateY = Math.max(-tiltLimit, Math.min(tiltLimit, rotateY));
-
-                container.css('transform', 'rotateX(' + clampedRotateX + 'deg) rotateY(' + clampedRotateY + 'deg)');
-
-                pendingFrame = false;
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                $('#fileNameDisplay').text(fileInput.files[0].name);
+                $('.file-msg').text('File Selected');
+                $('.file-icon').removeClass('fa-file-archive').addClass('fa-check-circle').css('color', '#00f2ea');
             }
+        });
 
-            $(document).on('mousemove', function(e) {
-                latestMousePos = { x: e.clientX, y: e.clientY };
-                if (!pendingFrame) {
-                    requestAnimationFrame(updateTilt);
-                    pendingFrame = true;
+        // Drag & Drop visual feedback
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files; // Assign dropped files to input
+            if (files.length > 0) {
+                $('#fileNameDisplay').text(files[0].name);
+                $('.file-msg').text('File Dropped');
+                $('.file-icon').removeClass('fa-file-archive').addClass('fa-check-circle').css('color', '#00f2ea');
+            }
+        });
+
+        // --- Tilt Effect ---
+        const container = $('#tilt-card');
+        const rootStyle = getComputedStyle(document.documentElement);
+        const tiltLimit = 10;
+        
+        $(document).on('mousemove', function(e) {
+            if (window.innerWidth < 600) return; // Disable on mobile
+            
+            const rect = container[0].getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xPct = x / rect.width;
+            const yPct = y / rect.height;
+            
+            const rotateX = (0.5 - yPct) * tiltLimit;
+            const rotateY = (xPct - 0.5) * tiltLimit;
+            
+            container.css('transform', `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
+        });
+
+        // --- Core Logic ---
+
+        $('#startBtn').click(function() {
+            if (isProcessing) return;
+
+            resetUI();
+            setProcessing(true);
+
+            if (currentMode === 'url') {
+                const url = $('#modUrl').val().trim();
+                if (!url) {
+                    showError("Please enter a URL first!");
+                    setProcessing(false);
+                    return;
                 }
-            });
-
-             if (container && container.length > 0) {
-                container.addClass('glint');
-             }
-
-            function updateProgress(width) {
-                 if (progressBar && progressBar.length > 0) {
-                    progressBar.css('width', width + '%');
-                    document.documentElement.style.setProperty('--fill-percentage', width + '%');
-                 }
-            }
-
-            function displayStatus(message, isError = false) {
-                 if (statusElement && statusElement.length > 0) {
-                    statusElement.html(message);
-                     if (isError) {
-                        statusElement.css('color', 'var(--highlight-color)');
-                    } else {
-                         statusElement.css('color', 'var(--text-color)');
-                    }
-                     statusElement.css('animation', 'none');
-                     requestAnimationFrame(() => {
-                         statusElement.css('animation', 'fadeInStatus 0.5s ease-out forwards');
-                     });
-                 }
-            }
-
-            function checkStatus(taskId) {
-                if (statusInterval) {
-                    clearInterval(statusInterval);
-                }
-
-                statusInterval = setInterval(function() {
-                    if (!taskId) {
-                        clearInterval(statusInterval);
-                        displayStatus("<i class='fas fa-times-circle'></i>&nbsp;Invalid task ID for status check.", true);
-                        downloadButton.prop('disabled', false);
-                        return;
-                    }
-
-                    $.ajax({
-                        url: apiQuery,
-                        type: 'POST',
-                        data: { uuid: taskId, lang: "en" }, // Changed to 'en' based on example
-                        dataType: 'json',
-                        success: function(response) {
-                            if (typeof response !== 'object' || response === null || !('status' in response)) {
-                                displayStatus("<i class='fas fa-times-circle'></i>&nbsp;Received unexpected response format.", true);
-                                clearInterval(statusInterval);
-                                downloadButton.prop('disabled', false);
-                                return;
-                            }
-
-                            var json = response;
-                            
-                            // 1. Update Progress Bar
-                            if (typeof json.progress === 'number') {
-                                updateProgress(json.progress);
-                            }
-
-                            // 2. Handle Processing Status (101)
-                            if (json.status === 101) {
-                                let statusText = json.message || "Processing...";
-                                
-                                // Append percentage if available
-                                if (typeof json.progress === 'number') {
-                                    statusText += " (" + json.progress + "%)";
-                                }
-                                displayStatus(statusText);
-                            } 
-
-                            // 3. Handle Completion Status (200)
-                            // Note: 'file' is at the top level in the provided example
-                            else if (json.status === 200 && json.file && !downloadTriggered) {
-                                downloadTriggered = true;
-                                const downloadUrl = apiBase + json.file;
-                                window.location.href = downloadUrl;
-
-                                clearInterval(statusInterval);
-                                displayStatus("<i class='fas fa-check-circle'></i>&nbsp;Download starting!");
-                                updateProgress(100);
-                                setTimeout(function() { location.reload(); }, 5000);
-                                downloadButton.prop('disabled', false);
-                            } 
-                            
-                            // 4. Handle Errors
-                            else if (json.status && json.status !== 200 && json.status !== 101) {
-                                clearInterval(statusInterval);
-                                displayStatus("<i class='fas fa-times-circle'></i>&nbsp;API Error: " + (json.message || "Code " + json.status), true);
-                                updateProgress(0);
-                                downloadButton.prop('disabled', false);
-                            }
-                        },
-                         error: function(jqXHR, textStatus, errorThrown) {
-                             clearInterval(statusInterval);
-                             let errorMessage = "Failed to check status.";
-                             if (textStatus) errorMessage += " Status: " + textStatus;
-                             if (errorThrown) errorMessage += " Error: " + errorThrown;
-                             if (jqXHR.status) errorMessage += " HTTP Status: " + jqXHR.status;
-                             displayStatus("<i class='fas fa-times-circle'></i>&nbsp;" + errorMessage, true);
-                             updateProgress(0);
-                             downloadButton.prop('disabled', false);
-                         }
-                    });
-                }, 1000); // 1 second interval
-            }
-
-            if (downloadButton && downloadButton.length > 0) {
-                downloadButton.click(function() {
-                    if (statusInterval) {
-                        clearInterval(statusInterval);
-                    }
-                    downloadTriggered = false;
-
-                    var url = $("#modUrl").val().trim();
-
-                    if (!url) {
-                        displayStatus("<i class='fas fa-exclamation-circle'></i>&nbsp;Please enter a mod URL!", true);
-                        updateProgress(0);
-                        return;
-                    }
-
-                     if (!url.includes("gta5-mods.com/")) {
-                         displayStatus("<i class='fas fa-exclamation-circle'></i>&nbsp;Please enter a valid gta5-mods.com URL!", true);
-                         updateProgress(0);
-                         return;
-                     }
-
-                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                         url = "https://" + url;
-                    }
-                     try {
-                         new URL(url);
-                     } catch (_) {
-                         displayStatus("<i class='fas fa-times-circle'></i>&nbsp;Please enter a valid URL format!", true);
-                         updateProgress(0);
-                         return;
-                     }
-
-                    downloadButton.prop('disabled', true);
-                    displayStatus("<i class='fas fa-spinner fa-spin'></i>&nbsp;Submitting task...");
-                    updateProgress(10);
-
-                    $.ajax({
-                         url: apiConvert,
-                         type: 'POST',
-                         data: { url: url, lang: "en" }, // Changed to 'en' based on example
-                         dataType: 'json',
-                         success: function(response) {
-                            if (typeof response !== 'object' || response === null || !('status' in response) || !('message' in response)) {
-                                displayStatus("<i class='fas fa-times-circle'></i>&nbsp;Received unexpected response format on submission.", true);
-                                downloadButton.prop('disabled', false);
-                                return;
-                            }
-
-                            var json = response;
-
-                             if(json.status === 200 && typeof json.message === 'string' && json.message.length > 0) {
-                                 const taskId = json.message;
-                                 displayStatus("<i class='fas fa-sync-alt fa-spin'></i>&nbsp;Task submitted. Waiting for conversion...");
-                                 updateProgress(20);
-                                 checkStatus(taskId);
-                             } else {
-                                 displayStatus("<i class='fas fa-times-circle'></i>&nbsp;Error submitting task: " + (typeof json.message === 'string' ? json.message : "Unknown response status " + json.status), true);
-                                 updateProgress(0);
-                                 downloadButton.prop('disabled', false);
-                                 clearInterval(statusInterval);
-                             }
-                         },
-                          error: function(jqXHR, textStatus, errorThrown) {
-                              clearInterval(statusInterval);
-                              let errorMessage = "Failed to submit task.";
-                              if (textStatus) errorMessage += " Status: " + textStatus;
-                              if (errorThrown) errorMessage += " Error: " + errorThrown;
-                              if (jqXHR.status) errorMessage += " HTTP Status: " + jqXHR.status;
-                              displayStatus("<i class='fas fa-times-circle'></i>&nbsp;" + errorMessage, true);
-                              updateProgress(0);
-                              downloadButton.prop('disabled', false);
-                              clearInterval(statusInterval);
-                          }
-                    });
-                });
+                startConversion(url);
             } else {
+                const file = fileInput.files[0];
+                if (!file) {
+                    showError("Please select a file first!");
+                    setProcessing(false);
+                    return;
+                }
+                uploadFile(file);
             }
+        });
 
-            $(window).on('beforeunload', function(){
-                if(statusInterval) {
-                    clearInterval(statusInterval);
+        function uploadFile(file) {
+            setStatus("Uploading to server...", "fas fa-cloud-upload-alt");
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            $.ajax({
+                url: API.UPLOAD,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            const percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                            setProgress(percentComplete);
+                            setStatus(`Uploading: ${percentComplete}%`, "fas fa-cloud-upload-alt");
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    // Assumption: API returns JSON with 'url' or raw URL text
+                    console.log("Upload Response:", response);
+                    
+                    let fileUrl = "";
+                    if (typeof response === 'object' && response.url) {
+                        fileUrl = response.url;
+                    } else if (typeof response === 'string' && response.startsWith('http')) {
+                        fileUrl = response;
+                    } else {
+                         // Fallback: Check if response has a 'link' or similar
+                         if(response.link) fileUrl = response.link;
+                         else if(response.file) fileUrl = response.file;
+                    }
+
+                    if (fileUrl) {
+                        console.log("File uploaded to:", fileUrl);
+                        setStatus("Upload complete! Starting conversion...", "fas fa-check");
+                        setTimeout(() => startConversion(fileUrl), 500);
+                    } else {
+                        showError("Upload failed: Could not retrieve file URL.");
+                        setProcessing(false);
+                    }
+                },
+                error: function(err) {
+                    showError("Upload failed. Server Error.");
+                    console.error(err);
+                    setProcessing(false);
                 }
             });
+        }
+
+        function startConversion(targetUrl) {
+            setStatus("Sending convert request...", "fas fa-satellite-dish");
+            setProgress(0); // Reset for conversion phase
+
+            $.ajax({
+                url: API.CONVERT,
+                type: 'POST',
+                data: { url: targetUrl, lang: "en" },
+                dataType: 'json',
+                success: function(res) {
+                    if (res.status === 200 && res.message) {
+                        const taskId = res.message;
+                        setStatus("Queued for conversion...", "fas fa-clock");
+                        pollStatus(taskId);
+                    } else {
+                        showError(res.message || "Failed to start conversion.");
+                        setProcessing(false);
+                    }
+                },
+                error: function(err) {
+                    showError("Failed to connect to conversion server.");
+                    setProcessing(false);
+                }
+            });
+        }
+
+        function pollStatus(taskId) {
+            if (statusInterval) clearInterval(statusInterval);
+
+            statusInterval = setInterval(() => {
+                $.ajax({
+                    url: API.QUERY,
+                    type: 'POST',
+                    data: { uuid: taskId, lang: "en" },
+                    dataType: 'json',
+                    success: function(res) {
+                        // 1. Status 101: Processing
+                        if (res.status === 101) {
+                            const progress = res.progress || 0;
+                            const msg = res.message || "Processing...";
+                            
+                            setProgress(progress);
+                            setStatus(`${msg} (${progress}%)`, "fas fa-cogs fa-spin");
+                        }
+                        // 2. Status 200: Success
+                        else if (res.status === 200 && res.file) {
+                            clearInterval(statusInterval);
+                            setProgress(100);
+                            setStatus("Conversion Complete! Downloading...", "fas fa-check-circle");
+                            
+                            const downloadUrl = API.BASE_DL + res.file;
+                            triggerDownload(downloadUrl);
+                            
+                            setProcessing(false);
+                        }
+                        // 3. Error
+                        else if (res.status !== 200 && res.status !== 101) {
+                            clearInterval(statusInterval);
+                            showError(`Error: ${res.message || "Unknown error"}`);
+                            setProcessing(false);
+                        }
+                    },
+                    error: function() {
+                        // Don't kill polling immediately on one network blip, but maybe log it
+                        console.warn("Polling network error, retrying...");
+                    }
+                });
+            }, 1000);
+        }
+
+        // --- Helpers ---
+
+        function triggerDownload(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function setStatus(text, iconClass) {
+            const html = `<i class="${iconClass}"></i> ${text}`;
+            $('#status-text').html(html).css('color', 'var(--primary)');
+        }
+
+        function showError(msg) {
+            const html = `<i class="fas fa-exclamation-triangle"></i> ${msg}`;
+            $('#status-text').html(html).css('color', 'var(--secondary)');
+            setProgress(0);
+        }
+
+        function setProgress(percent) {
+            $('#progressBar').css('width', percent + '%');
+        }
+
+        function setProcessing(active) {
+            isProcessing = active;
+            $('#startBtn').prop('disabled', active);
+            if (active) {
+                $('#startBtn').html('<i class="fas fa-spinner fa-spin"></i> Working...');
+            } else {
+                $('#startBtn').html('<i class="fas fa-bolt"></i> Start Conversion');
+            }
+        }
+
+        function resetUI() {
+            setStatus("", "");
+            setProgress(0);
+            if (statusInterval) clearInterval(statusInterval);
+        }
+
+        // Disable Inspect Element shortcut (as per original code)
+        document.addEventListener("keydown", function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || (e.ctrlKey && e.keyCode == 85) || (e.ctrlKey && e.keyCode == 83)) {
+                e.preventDefault();
+            }
         });
     </script>
 </body>
