@@ -331,7 +331,11 @@
     <script>
         $(document).ready(function() {
             'use strict';
-            var postURL = "https://gta5mods.hk416.org/en";
+            // NEW API ENDPOINTS
+            var apiConvert = "https://convert.cfx.rs/api/convert";
+            var apiQuery = "https://convert.cfx.rs/api/query";
+            var apiBase = "https://convert.cfx.rs/";
+
             var downloadTriggered = false;
             var statusInterval;
             const container = $('.container');
@@ -421,9 +425,9 @@
                     }
 
                     $.ajax({
-                        url: postURL,
+                        url: apiQuery, // Updated to new Query API
                         type: 'POST',
-                        data: { uuid: taskId, lang: "en_US" },
+                        data: { uuid: taskId },
                         dataType: 'json',
                         success: function(response) {
                             if (typeof response !== 'object' || response === null || !('status' in response)) {
@@ -457,7 +461,8 @@
 
                             if(json.status === 200 && typeof json.message === 'object' && json.message !== null && json.message.file && !downloadTriggered) {
                                 downloadTriggered = true;
-                                const downloadUrl = "https://gta5mods.hk416.org/" + json.message.file;
+                                // Updated to use new base URL
+                                const downloadUrl = apiBase + json.message.file;
                                 window.location.href = downloadUrl;
 
                                 clearInterval(statusInterval);
@@ -523,9 +528,9 @@
                     updateProgress(10);
 
                     $.ajax({
-                         url: postURL,
+                         url: apiConvert, // Updated to new Convert API
                          type: 'POST',
-                         data: { url: url, lang: "en_US" },
+                         data: { url: url },
                          dataType: 'json',
                          success: function(response) {
                             if (typeof response !== 'object' || response === null || !('status' in response) || !('message' in response)) {
@@ -547,18 +552,18 @@
                                  downloadButton.prop('disabled', false);
                                  clearInterval(statusInterval);
                              }
-                        },
-                         error: function(jqXHR, textStatus, errorThrown) {
-                             clearInterval(statusInterval);
-                             let errorMessage = "Failed to submit task.";
-                             if (textStatus) errorMessage += " Status: " + textStatus;
-                             if (errorThrown) errorMessage += " Error: " + errorThrown;
-                             if (jqXHR.status) errorMessage += " HTTP Status: " + jqXHR.status;
-                             displayStatus("<i class='fas fa-times-circle'></i>&nbsp;" + errorMessage, true);
-                             updateProgress(0);
-                             downloadButton.prop('disabled', false);
-                             clearInterval(statusInterval);
-                         }
+                         },
+                          error: function(jqXHR, textStatus, errorThrown) {
+                              clearInterval(statusInterval);
+                              let errorMessage = "Failed to submit task.";
+                              if (textStatus) errorMessage += " Status: " + textStatus;
+                              if (errorThrown) errorMessage += " Error: " + errorThrown;
+                              if (jqXHR.status) errorMessage += " HTTP Status: " + jqXHR.status;
+                              displayStatus("<i class='fas fa-times-circle'></i>&nbsp;" + errorMessage, true);
+                              updateProgress(0);
+                              downloadButton.prop('disabled', false);
+                              clearInterval(statusInterval);
+                          }
                     });
                 });
             } else {
