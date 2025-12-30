@@ -425,9 +425,9 @@
                     }
 
                     $.ajax({
-                        url: apiQuery, // Updated to new Query API
+                        url: apiQuery,
                         type: 'POST',
-                        data: { uuid: taskId },
+                        data: { uuid: taskId, lang: "en_US" },
                         dataType: 'json',
                         success: function(response) {
                             if (typeof response !== 'object' || response === null || !('status' in response)) {
@@ -438,30 +438,54 @@
                             }
 
                             var json = response;
-
-                            if (typeof json.message === 'string') {
-                                displayStatus(json.message);
-                            } else if (typeof json.message === 'object' && json.message !== null) {
-                                displayStatus("Processing...");
-                            } else {
-                                displayStatus("Waiting for status update...");
+                            
+                            // Handle Progress from API directly if available
+                            if (typeof json.progress === 'number') {
+                                updateProgress(json.progress);
                             }
 
-                            if (typeof json.message === 'string') {
+                            // Handle Text Display (Force English)
+                            if (json.status === 101) {
+                                let statusText = "Processing";
+                                const msg = (json.message || "").toString();
+
+                                // Map Chinese/English API messages to English UI
+                                if (msg.includes("正在转换") || msg.includes("Converting")) {
+                                    statusText = "Converting";
+                                } else if (msg.includes("排队") || msg.includes("Pending")) {
+                                    statusText = "Pending in queue";
+                                } else if (msg.includes("打包") || msg.includes("Packaging")) {
+                                    statusText = "Packaging";
+                                }
+
+                                if (typeof json.progress === 'number') {
+                                    statusText += " (" + json.progress + "%)";
+                                } else {
+                                    statusText += "...";
+                                }
+                                displayStatus(statusText);
+                            } 
+                            // Fallback for older string-based progress logic if 'progress' field is missing
+                            else if (typeof json.message === 'string' && typeof json.progress !== 'number') {
                                 if (json.message.includes("Pending")) {
                                     updateProgress(15);
+                                    displayStatus("Pending...");
                                 } else if (json.message.includes("Converting")) {
                                     updateProgress(50);
+                                    displayStatus("Converting...");
                                 } else if (json.message.includes("Packaging")) {
                                     updateProgress(75);
+                                    displayStatus("Packaging...");
                                 } else if (json.message.includes("Completed")) {
                                     updateProgress(95);
+                                } else {
+                                    displayStatus(json.message);
                                 }
                             }
 
+                            // Check for completion
                             if(json.status === 200 && typeof json.message === 'object' && json.message !== null && json.message.file && !downloadTriggered) {
                                 downloadTriggered = true;
-                                // Updated to use new base URL
                                 const downloadUrl = apiBase + json.message.file;
                                 window.location.href = downloadUrl;
 
@@ -472,7 +496,7 @@
                                 downloadButton.prop('disabled', false);
                             } else if (json.status && json.status !== 200 && json.status !== 101) {
                                 clearInterval(statusInterval);
-                                displayStatus("<i class='fas fa-times-circle'></i>&nbsp;API Error: " + (typeof json.message === 'string' ? json.message : "Unknown error status " + json.status), true);
+                                displayStatus("<i class='fas fa-times-circle'></i>&nbsp;API Error: " + (typeof json.message === 'string' ? json.message : "Code " + json.status), true);
                                 updateProgress(0);
                                 downloadButton.prop('disabled', false);
                             }
@@ -488,7 +512,7 @@
                              downloadButton.prop('disabled', false);
                          }
                     });
-                }, 5000);
+                }, 2000); // Reduced interval to 2s for smoother updates
             }
 
             if (downloadButton && downloadButton.length > 0) {
@@ -530,7 +554,7 @@
                     $.ajax({
                          url: apiConvert, // Updated to new Convert API
                          type: 'POST',
-                         data: { url: url },
+                         data: { url: url, lang: "en_US" }, // Added lang="en_US" to force English
                          dataType: 'json',
                          success: function(response) {
                             if (typeof response !== 'object' || response === null || !('status' in response) || !('message' in response)) {
